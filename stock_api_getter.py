@@ -35,6 +35,7 @@ def __main__():
     #     print("Didn't Access The API!")
     # except FileNotFoundError:
     #     get_api_stock_data('TSLA')
+    pass
 
 
 if __name__ == '__main__':
