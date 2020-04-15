@@ -39,6 +39,28 @@ def set_up_main_db():
     return cur, conn
 
 
+def clear_stocks_table(cur, conn):
+    """
+    Deletes the Stocks table to allow for a data reset.
+    Prints a confirmation statement when a table is dropped.
+    """
+    cur.execute("DROP TABLE IF EXISTS Stocks")
+    conn.commit()
+    
+    print("Stocks table reset. Ready for new data collection.")
+
+
+def clear_tweets_table(cur, conn):
+    """
+    Deletes the Tweets table to allow for a data reset.
+    Prints a confirmation statement when a table is dropped.
+    """
+    cur.execute("DROP TABLE IF EXISTS Tweets")
+    conn.commit()
+    
+    print("Tweets table reset. Ready for new data collection.")
+
+
 def stock_api_date_to_standard(date_str):
     """
     Converts a date string in the format returned by the stock prices 

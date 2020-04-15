@@ -36,20 +36,38 @@ def get_limited_stock_data(company_str, cur, conn):
               in the database. Creates a file to record the most recent date stored,
               and stores the next 20 dates on running the function again by reading 
               the supplemental file.
-
     """
+    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/{company_str}?from=2019-11-19&to=2020-04-14")
+    stock_price_list = json.loads(r.text)['historical']
+    
     cur.execute("CREATE TABLE IF NOT EXISTS Stocks (date_id INTERGER PRIMARY KEY, stock_price REAL)")
     
-    
-    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/{company_str}?from=2019-11-19&to=2020-04-14")
-    response = json.loads(r.text)
+    ## Check for the most recent date
+    cur.execute("SELECT Dates.date FROM Dates JOIN Stocks WHERE Dates.date_id = Stocks.date_id")
+    fetched_dates = cur.fetchall()
+    print(fetched_dates)
+    if fetched_dates == []:
+        ## If none, start at the first day
+        start_index = 0
+    else:
+        ## If present, get most recent
+        for day in stock_price_list:
+            if stock_api_date_to_standard(day['date']) == fetched_dates[-1][0]:
+                start_index = stock_price_list.index(day) + 1
+                print("Got here!")
 
-    cur.execute("SELECT date_id FROM Stocks")
+    new_data_point_count = 0
+    for item in stock_price_list[start_index:]:
+        if new_data_point_count < 20:
+            cur.execute("SELECT date_id FROM Dates WHERE date=?", (stock_api_date_to_standard(item['date']),))
+            
+            date_id = cur.fetchone()[0]
+            stock_price = item['close']
 
-    for day in response['historical']:
-        day['date']
-
-        #cur.execute("INSERT INTO Stocks")
+            cur.execute("INSERT INTO Stocks (date_id, stock_price) VALUES (?,?)", (date_id, stock_price))
+            new_data_point_count += 1
+        else:
+            break
 
     conn.commit()
 
