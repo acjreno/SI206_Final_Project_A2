@@ -58,7 +58,7 @@ def get_limited_tweet_data(cur,conn):
     elon_tweet_list = api.user_timeline(screen_name='elonmusk',max_id=start_id,count=100,page=page_number)
 
     for tweet in elon_tweet_list:
-        if tweet['in_reply_to_status_id'] == '':
+        if tweet._json['in_reply_to_status_id'] == None:
             tweet_count += 1
             tweet_id = tweet._json['id']
             tweet_num = tweet_count
@@ -70,7 +70,7 @@ def get_limited_tweet_data(cur,conn):
                 date_id = -1
         
         
-        cur.execute("INSERT INTO Tweets (tweet_id, tweet_num , date_id) VALUES (?,?,?)",(tweet_id,tweet_num,date_id))
+            cur.execute("INSERT INTO Tweets (tweet_id, tweet_num , date_id) VALUES (?,?,?)",(tweet_id,tweet_num,date_id))
     
     conn.commit()
 
