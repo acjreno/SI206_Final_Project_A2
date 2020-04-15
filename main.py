@@ -9,6 +9,7 @@ from utility import (set_up_main_db,
                      stock_api_date_to_standard)
 
 from stock_api_getter import get_limited_stock_data
+from tweet_api_getter import get_limited_tweet_data
 
 def __main__():
     #print("Welcome to Elon's Expensive Stocks, a data collection project by Ashley Thompson and Alex ")
@@ -31,8 +32,9 @@ def __main__():
         ## print count in table
     collect_t_data = input("Collect more Twitter Data? (y/n): ")
     if collect_t_data == 'y':
-        ## collect more data
-        ## print status
+        get_limited_tweet_data(cur,conn)
+        print("COLLECTEDDDD!!!")
+        ## print statusn
         ## print count in table
         pass
     ## Draw Graphs?
