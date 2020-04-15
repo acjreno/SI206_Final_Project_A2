@@ -8,7 +8,6 @@
 
 import requests
 import json
-import time
 
 ## Include utility functions to convert time and dates.
 from utility import stock_api_date_to_standard
@@ -26,6 +25,22 @@ def get_api_stock_data(company_str):
     for historical in response["historical"]:
         print(historical['date'])
 
+def get_limited_stock_data(company_str):
+    """
+    Function to gather data from the stock API, and then store a 
+    maximum of 20 data points in the Stocks table of the DB. 
+
+    Requires: company_str - A string representing the Stock abbreviation of a company.
+    Modifies: Upon initial run, stores the first 20 of 100 days worth of stock data 
+              in the database. Creates a file to record the most recent date stored,
+              and stores the next 20 dates on running the function again by reading 
+              the supplemental file. 
+    """
+    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/TSLA?from=2019-11-19&to=2020-04-14")
+    response = json.loads(r.text)
+
+
+
 
 def __main__():
     # try:
@@ -35,8 +50,14 @@ def __main__():
     #     print("Didn't Access The API!")
     # except FileNotFoundError:
     #     get_api_stock_data('TSLA')
+
+
+    ## Date Range
+    # 2020-04-14
+    # 2019-11-19
+
+
+
     pass
 
 
-if __name__ == '__main__':
-    __main__()
