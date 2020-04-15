@@ -6,7 +6,9 @@
 
 from utility import (set_up_main_db, 
                      twitter_api_date_to_standard, 
-                     stock_api_date_to_standard)
+                     stock_api_date_to_standard,
+                     clear_stocks_table,
+                     clear_tweets_table)
 
 from stock_api_getter import get_limited_stock_data
 from tweet_api_getter import get_limited_tweet_data
@@ -17,6 +19,7 @@ def __main__():
     ## Create Elon_Value.db
     cur, conn = set_up_main_db()
 
+    clear_stocks_table(cur, conn)
     ## Restart?
     ## Collect Data?
     print("Current table statuses:")
@@ -30,19 +33,16 @@ def __main__():
         ## print status
         print("Stock data collected.")
         ## print count in table
+    
     collect_t_data = input("Collect more Twitter Data? (y/n): ")
     if collect_t_data == 'y':
         get_limited_tweet_data(cur,conn)
         print("COLLECTEDDDD!!!")
         ## print statusn
         ## print count in table
-        pass
+
     ## Draw Graphs?
 
-
-    ## Test Twitter date to standard
-    #print(twitter_api_date_to_standard("Tue Apr 14 23:59:35 +0000 2020"))
-    pass
 
 
 if __name__ == '__main__':

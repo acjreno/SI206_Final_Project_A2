@@ -48,7 +48,7 @@ def get_limited_stock_data(company_str, cur, conn):
     print(fetched_dates)
     if fetched_dates == []:
         ## If none, start at the first day
-        start_index = stock_api_date_to_standard(stock_price_list[0]['date'])
+        start_index = 0
     else:
         ## If present, get most recent
         for day in stock_price_list:
