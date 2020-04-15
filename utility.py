@@ -20,18 +20,18 @@ def set_up_main_db():
     cur = conn.cursor()
 
     ## Create our Dates table.
-    cur.execute("DROP TABLE IF EXISTS Dates")
-    cur.execute("CREATE TABLE Dates (date_id INTEGER PRIMARY KEY, date TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Dates (date_id INTEGER PRIMARY KEY, date TEXT)")
     
     ## Populate the Dates table using a cheeky call to the stock API.
-    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/TSLA?from=2019-11-19&to=2020-04-14")
-    response = json.loads(r.text)
+    if (cur.execute("SELECT date_id FROM Dates").fetchone() == tuple()):
+        r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/TSLA?from=2019-11-19&to=2020-04-14")
+        response = json.loads(r.text)
 
-    date_id = 0
-    for item in response['historical']:
-        date = stock_api_date_to_standard(item['date'])
-        cur.execute("INSERT INTO Dates (date_id, date) VALUES (?,?)", (date_id, date))
-        date_id += 1
+        date_id = 0
+        for item in response['historical']:
+            date = stock_api_date_to_standard(item['date'])
+            cur.execute("INSERT INTO Dates (date_id, date) VALUES (?,?)", (date_id, date))
+            date_id += 1
 
     ## Commit the changes to the db file.
     conn.commit()

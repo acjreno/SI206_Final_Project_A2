@@ -25,7 +25,8 @@ def get_api_stock_data(company_str):
     for historical in response["historical"]:
         print(historical['date'])
 
-def get_limited_stock_data(company_str):
+
+def get_limited_stock_data(company_str, cur, conn):
     """
     Function to gather data from the stock API, and then store a 
     maximum of 20 data points in the Stocks table of the DB. 
@@ -34,30 +35,22 @@ def get_limited_stock_data(company_str):
     Modifies: Upon initial run, stores the first 20 of 100 days worth of stock data 
               in the database. Creates a file to record the most recent date stored,
               and stores the next 20 dates on running the function again by reading 
-              the supplemental file. 
+              the supplemental file.
+
     """
-    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/TSLA?from=2019-11-19&to=2020-04-14")
+    cur.execute("CREATE TABLE IF NOT EXISTS Stocks (date_id INTERGER PRIMARY KEY, stock_price REAL)")
+    
+    
+    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/{company_str}?from=2019-11-19&to=2020-04-14")
     response = json.loads(r.text)
 
+    cur.execute("SELECT date_id FROM Stocks")
 
+    for day in response['historical']:
+        day['date']
 
+        #cur.execute("INSERT INTO Stocks")
 
-def __main__():
-    # try:
-    #     with open('TSLA_100_days_stock.json') as f:
-    #         data = json.loads(f.read())
-    #         print(len(data['historical']))
-    #     print("Didn't Access The API!")
-    # except FileNotFoundError:
-    #     get_api_stock_data('TSLA')
-
-
-    ## Date Range
-    # 2020-04-14
-    # 2019-11-19
-
-
-
-    pass
+    conn.commit()
 
 
