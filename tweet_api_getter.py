@@ -1,4 +1,4 @@
-import tweepy
+import tweepy 
 import requests
 import json
 
@@ -7,14 +7,7 @@ auth.set_access_token('3299016720-cgw3M5OKYbf8BzUHgaVBdVctynygwLTYzngbLsT', '2Sj
 
 api = tweepy.API(auth)
 
-# user = api.get_user('elonmusk')
-# print(user.followers_count)
+start_id = 1250212134971043840
 
-# for status in tweepy.Cursor(user.user_timeline).items(200):
-#     print(status)
-
-r = requests.get('https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=twitterapi&count=2')
-response = json.loads(r.text)
-
-print(response)
-
+elon_tweet_list = api.user_timeline(screen_name='elonmusk',max_id=start_id,count=2000)
+print(len(elon_tweet_list))
