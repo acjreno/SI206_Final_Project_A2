@@ -5,8 +5,6 @@
 ## This file contains various utility functions and data points that are 
 ##  useful in the collection and sorting of data obtained from the API's.
 
-import time
-import re
 import sqlite3
 import requests
 import json
@@ -35,7 +33,10 @@ def set_up_main_db():
         cur.execute("INSERT INTO Dates (date_id, date) VALUES (?,?)", (date_id, date))
         date_id += 1
 
+    ## Commit the changes to the db file.
     conn.commit()
+
+    return cur, conn
 
 
 def stock_api_date_to_standard(date_str):
@@ -62,4 +63,8 @@ def twitter_api_date_to_standard(date_str):
     where single digit months or days are preceded by a zero. 
     For use in creating a standardized primary key, the date of a data point.
     """
-    pass
+    # Tue Apr 14 23:59:35 +0000 2020
+    months = {"Nov":"11", "Dec":"12", "Jan":"01", "Feb":"02", "Mar":"03", "Apr":"04"}
+
+    date_str_lst = date_str.split()
+    return f"{months.get(date_str_lst[1])}/{date_str_lst[2]}/{date_str_lst[-1]}"
