@@ -90,3 +90,26 @@ def twitter_api_date_to_standard(date_str):
 
     date_str_lst = date_str.split()
     return f"{months.get(date_str_lst[1])}/{date_str_lst[2]}/{date_str_lst[-1]}"
+
+
+def print_data_status(table_name, cur, conn):
+    """
+    Prints a nice-looking status bar to represent how complete each tables'
+    data set is. 
+    Requires: table_name - MUST be one of Tweets, Stocks.
+              cur, conn - Connections to Elon_Value.db
+    Effects: Prints a status bar to the main console.
+             Returns None.
+    """
+    cur.execute(f"SELECT date_id FROM {table_name}")
+    date_id_list = [tup[0] for tup in cur.fetchall()]
+
+    if table_name == "Stocks":
+        bar_status_int = (max(date_id_list) + 1) // 10
+    elif table_name == "Tweets":
+        ## Remove the -1 dates from the status.
+        date_id_list = [date_id for date_id in date_id_list if date_id != -1]
+        bar_status_int = (100 - (min(date_id_list))) // 10
+
+    status = '+' * bar_status_int + '-' * (10 - bar_status_int)
+    print(f"{table_name}: {status} - {bar_status_int * 10}%")
