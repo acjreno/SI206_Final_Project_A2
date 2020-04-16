@@ -19,8 +19,8 @@ def get_limited_tweet_data(cur,conn):
     ##Authorize the Tweepy api with my api keys
     api = auth()
 
-    ## The last Elon Musk tweet from April 15th(one before the counted id)
-    intial_id = 1250212864951857154 
+    ## The last Elon Musk tweet from April 14th
+    intial_id = 1250212134971043840 
 
     ##create the tweets table(Primary key=Tweet_id)
     cur.execute("CREATE TABLE IF NOT EXISTS Tweets (tweet_id INTEGER PRIMARY KEY, tweet_num INTEGER , date_id INTEGER)")
@@ -35,7 +35,7 @@ def get_limited_tweet_data(cur,conn):
         ##get most recent id
         start_id = tweet_id_list[0][0]
         for tweet in tweet_id_list:
-            if tweet[0] < start_id:
+            if tweet[0] > start_id:
                 start_id = tweet[0]
 
 
@@ -56,25 +56,26 @@ def get_limited_tweet_data(cur,conn):
 
     ##get 100 items from tweepy
     elon_tweet_list = api.user_timeline(screen_name='elonmusk',max_id=start_id,count=100,page=page_number)
-    new_data_point_count = 0
+
     for tweet in elon_tweet_list:
-        if new_data_point_count < 20:
-            if tweet._json['in_reply_to_status_id'] == None:
-                tweet_count += 1
-                tweet_id = tweet._json['id']
-                if tweet_id != start_id:
-                    tweet_num = tweet_count
-                    date = twitter_api_date_to_standard(tweet._json["created_at"])
-                    try:
-                        cur.execute("SELECT date_id FROM Dates WHERE date=?",(date,))
-                        date_id = cur.fetchone()[0]
-                    except:
-                        date_id = -1
-                
-                    new_data_point_count += 1
-                    cur.execute("INSERT INTO Tweets (tweet_id, tweet_num , date_id) VALUES (?,?,?)",(tweet_id,tweet_num,date_id))
+        if tweet._json['in_reply_to_status_id'] == None:
+            tweet_count += 1
+            tweet_id = tweet._json['id']
+            tweet_num = tweet_count
+            date = twitter_api_date_to_standard(tweet._json["created_at"])
+            try:
+                cur.execute("SELECT date_id FROM Dates WHERE date=?",(date,))
+                date_id = cur.fetchone()[0]
+            except:
+                date_id = -1
+        
+        
+            cur.execute("INSERT INTO Tweets (tweet_id, tweet_num , date_id) VALUES (?,?,?)",(tweet_id,tweet_num,date_id))
     
     conn.commit()
+
+
+            
 
 
 
