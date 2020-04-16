@@ -14,33 +14,40 @@ from stock_api_getter import get_limited_stock_data
 from tweet_api_getter import get_limited_tweet_data
 
 def __main__():
-    #print("Welcome to Elon's Expensive Stocks, a data collection project by Ashley Thompson and Alex ")
+    print("----------------------------------------")
+    print("    Tesla Stock and Sir Tweets-A-Lot    ")
+    print("    A data collection project by A^2.   ")
+    print("----------------------------------------\n")
     
     ## Create Elon_Value.db
     cur, conn = set_up_main_db()
 
-    clear_stocks_table(cur, conn)
-    ## Restart?
-    ## Collect Data?
-    print("Current table statuses:")
+
+    ## Restart the data to begin recollection?
+    clear_s_data = input("Reset the Stock Table? (y/n): ")
+    if clear_s_data.lower() == 'y':
+        clear_stocks_table(cur, conn)
+    clear_t_data = input("Reset the Stock Table? (y/n): ")
+    if clear_t_data.lower() == 'y':
+        clear_tweets_table(cur, conn)
+
+
+    print("\nCurrent table statuses:")
+    print(" - Not Implemented -\n")
     ## STATUS BARS!!!!
 
-
+    ## Collect Data based on user input.
     collect_s_data = input("Collect more Stock Data? (y/n): ")
-    if collect_s_data == 'y':
+    if collect_s_data.lower() == 'y':
         ## collect more data
         get_limited_stock_data("TSLA", cur, conn)
-        ## print status
-        print("Stock data collected.")
-        ## print count in table
     
     collect_t_data = input("Collect more Twitter Data? (y/n): ")
-    if collect_t_data == 'y':
+    if collect_t_data.lower() == 'y':
         get_limited_tweet_data(cur,conn)
         print("COLLECTEDDDD!!!")
-        ## print statusn
-        ## print count in table
-
+        ## print status
+        
     ## Draw Graphs?
 
 
