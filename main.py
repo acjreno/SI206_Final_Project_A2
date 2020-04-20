@@ -15,6 +15,7 @@ from stock_api_getter import get_limited_stock_data
 from tweet_api_getter import get_limited_tweet_data
 
 from calculations import calc_tweet_value
+from graphs import tweet_value_graph
 
 def __main__():
     print("----------------------------------------")
@@ -59,6 +60,7 @@ def __main__():
         calc_tweet_value(cur, conn)
     
     ## Draw Graphs?
+    tweet_value_graph(cur,conn)
 
 
 if __name__ == '__main__':

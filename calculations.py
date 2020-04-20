@@ -47,6 +47,9 @@ def calc_tweet_value(cur, conn):
     for date_id in range(1, 100):
         date_data = date_id_dict[date_id]
 
-        calculated_data_list.append((date_data[0], round(date_data[1] - prev_date_data[1], 3)))
+        calculated_data_list.append((date_id, date_data[0], round(date_data[1] - prev_date_data[1], 3)))
 
         prev_date_data = date_data
+
+
+    return calculated_data_list
