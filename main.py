@@ -25,16 +25,19 @@ def __main__():
 
 
     ## Restart the data to begin recollection?
-    clear_s_data = input("Reset the Stock Table? (y/n): ")
-    if clear_s_data.lower() == 'y':
-        clear_stocks_table(cur, conn)
-    clear_t_data = input("Reset the Tweet Table? (y/n): ")
-    if clear_t_data.lower() == 'y':
-        clear_tweets_table(cur, conn)
+    reset = input("Reset any tables? (y/n): ")
+    if reset.lower() == 'y':
+        clear_s_data = input("Reset the Stock Table? (y/n): ")
+        if clear_s_data.lower() == 'y':
+            clear_stocks_table(cur, conn)
+        clear_t_data = input("Reset the Tweet Table? (y/n): ")
+        if clear_t_data.lower() == 'y':
+            clear_tweets_table(cur, conn)
 
 
     print("\nCurrent table statuses:")
     print_data_status("Stocks", cur, conn)
+    print_data_status("Tweets", cur, conn)
     ## STATUS BARS!!!!
 
     ## Collect Data based on user input.
@@ -50,7 +53,6 @@ def __main__():
         ## print status
         
     ## Draw Graphs?
-
 
 
 if __name__ == '__main__':

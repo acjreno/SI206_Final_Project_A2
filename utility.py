@@ -39,6 +39,10 @@ def set_up_main_db():
     ## Create the Stocks table if it has been deleted to reset data collection.
     cur.execute("CREATE TABLE IF NOT EXISTS Stocks (date_id INTERGER PRIMARY KEY, stock_price REAL)")
     conn.commit()
+    
+    ##create the tweets table(Primary key=Tweet_id)
+    cur.execute("CREATE TABLE IF NOT EXISTS Tweets (tweet_id INTEGER PRIMARY KEY, tweet_num INTEGER , date_id INTEGER)")
+    conn.commit()
 
     return cur, conn
 
@@ -61,6 +65,7 @@ def clear_tweets_table(cur, conn):
     Prints a confirmation statement when a table is dropped.
     """
     cur.execute("DROP TABLE IF EXISTS Tweets")
+    cur.execute("CREATE TABLE IF NOT EXISTS Tweets (tweet_id INTEGER PRIMARY KEY, tweet_num INTEGER , date_id INTEGER)")
     conn.commit()
     
     print("Tweets table reset. Ready for new data collection.")
@@ -106,7 +111,7 @@ def print_data_status(table_name, cur, conn):
     Effects: Prints a status bar to the main console.
              Returns None.
     """
-    cur.execute(f"SELECT date_id FROM Stocks")
+    cur.execute(f"SELECT date_id FROM {table_name}")
     date_id_list = [tup[0] for tup in cur.fetchall()]
 
     if table_name == "Stocks":

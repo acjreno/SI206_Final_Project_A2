@@ -22,9 +22,6 @@ def get_limited_tweet_data(cur,conn):
     ## The last Elon Musk tweet from April 15th(one before the counted id)
     intial_id = 1250212864951857154 
 
-    ##create the tweets table(Primary key=Tweet_id)
-    cur.execute("CREATE TABLE IF NOT EXISTS Tweets (tweet_id INTEGER PRIMARY KEY, tweet_num INTEGER , date_id INTEGER)")
-
     ##Check for most recent tweet id
     cur.execute("SELECT tweet_id FROM Tweets")
     tweet_id_list = cur.fetchall()
