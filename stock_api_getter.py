@@ -43,9 +43,6 @@ def get_limited_stock_data(company_str, cur, conn):
     r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/{company_str}?from=2019-11-19&to=2020-04-14")
     stock_price_list = json.loads(r.text)['historical']
     
-    ## Create the Stocks table if it has been deleted to reset data collection.
-    cur.execute("CREATE TABLE IF NOT EXISTS Stocks (date_id INTERGER PRIMARY KEY, stock_price REAL)")
-    
     ## Calculate the index to resume data collection from using the dates in the database.
     cur.execute("SELECT Dates.date FROM Dates JOIN Stocks WHERE Dates.date_id = Stocks.date_id")
     fetched_dates = cur.fetchall()
