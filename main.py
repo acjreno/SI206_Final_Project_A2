@@ -14,6 +14,8 @@ from utility import (set_up_main_db,
 from stock_api_getter import get_limited_stock_data
 from tweet_api_getter import get_limited_tweet_data
 
+from calculations import calc_tweet_value
+
 def __main__():
     print("----------------------------------------")
     print("    Tesla Stock and Sir Tweets-A-Lot    ")
@@ -52,6 +54,10 @@ def __main__():
         print("COLLECTEDDDD!!!")
         ## print status
         
+    calculate_data = input("Calculate and graph visualizations? (y/n): ")
+    if calculate_data == 'y':
+        calc_tweet_value(cur, conn)
+    
     ## Draw Graphs?
 
 
