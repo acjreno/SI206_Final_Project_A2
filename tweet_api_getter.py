@@ -13,7 +13,6 @@ def auth():
     return api
 
 
-
 def get_limited_tweet_data(cur,conn):
 
     ##Authorize the Tweepy api with my api keys

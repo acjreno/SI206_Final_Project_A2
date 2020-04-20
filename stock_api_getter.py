@@ -12,19 +12,6 @@ import json
 ## Include utility functions to convert time and dates.
 from utility import stock_api_date_to_standard
 
-def get_api_stock_data(company_str):
-    """
-    Testing function that gathers data for 100 days and stores them in a file for offline viewing.
-    """
-    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/{company_str}?timeseries=100")
-    response = json.loads(r.text)
-
-    with open('TSLA_100_days_stock.json', 'w') as f:
-        f.write(r.text)
-
-    for historical in response["historical"]:
-        print(historical['date'])
-
 
 def get_limited_stock_data(company_str, cur, conn):
     """
