@@ -8,7 +8,8 @@ from utility import (set_up_main_db,
                      twitter_api_date_to_standard, 
                      stock_api_date_to_standard,
                      clear_stocks_table,
-                     clear_tweets_table)
+                     clear_tweets_table,
+                     print_data_status)
 
 from stock_api_getter import get_limited_stock_data
 from tweet_api_getter import get_limited_tweet_data
@@ -27,13 +28,13 @@ def __main__():
     clear_s_data = input("Reset the Stock Table? (y/n): ")
     if clear_s_data.lower() == 'y':
         clear_stocks_table(cur, conn)
-    clear_t_data = input("Reset the Stock Table? (y/n): ")
+    clear_t_data = input("Reset the Tweet Table? (y/n): ")
     if clear_t_data.lower() == 'y':
         clear_tweets_table(cur, conn)
 
 
     print("\nCurrent table statuses:")
-    print(" - Not Implemented -\n")
+    print_data_status("Stocks", cur, conn)
     ## STATUS BARS!!!!
 
     ## Collect Data based on user input.

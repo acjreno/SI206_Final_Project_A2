@@ -23,7 +23,7 @@ def set_up_main_db():
     cur.execute("CREATE TABLE IF NOT EXISTS Dates (date_id INTEGER PRIMARY KEY, date TEXT)")
     
     ## Populate the Dates table using a cheeky call to the stock API.
-    if (cur.execute("SELECT date_id FROM Dates").fetchone() == tuple()):
+    if (cur.execute("SELECT date_id FROM Dates").fetchone() == None):
         r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/TSLA?from=2019-11-19&to=2020-04-14")
         response = json.loads(r.text)
 
@@ -36,6 +36,10 @@ def set_up_main_db():
     ## Commit the changes to the db file.
     conn.commit()
 
+    ## Create the Stocks table if it has been deleted to reset data collection.
+    cur.execute("CREATE TABLE IF NOT EXISTS Stocks (date_id INTERGER PRIMARY KEY, stock_price REAL)")
+    conn.commit()
+
     return cur, conn
 
 
@@ -45,6 +49,7 @@ def clear_stocks_table(cur, conn):
     Prints a confirmation statement when a table is dropped.
     """
     cur.execute("DROP TABLE IF EXISTS Stocks")
+    cur.execute("CREATE TABLE IF NOT EXISTS Stocks (date_id INTERGER PRIMARY KEY, stock_price REAL)")
     conn.commit()
     
     print("Stocks table reset. Ready for new data collection.")
@@ -101,15 +106,15 @@ def print_data_status(table_name, cur, conn):
     Effects: Prints a status bar to the main console.
              Returns None.
     """
-    cur.execute(f"SELECT date_id FROM {table_name}")
+    cur.execute(f"SELECT date_id FROM Stocks")
     date_id_list = [tup[0] for tup in cur.fetchall()]
 
     if table_name == "Stocks":
-        bar_status_int = (max(date_id_list) + 1) // 10
+        bar_status_int = (max(date_id_list + [0]) + 1) // 10
     elif table_name == "Tweets":
         ## Remove the -1 dates from the status.
         date_id_list = [date_id for date_id in date_id_list if date_id != -1]
-        bar_status_int = (100 - (min(date_id_list))) // 10
+        bar_status_int = (100 - (min(date_id_list + [99]))) // 10
 
     status = '+' * bar_status_int + '-' * (10 - bar_status_int)
-    print(f"{table_name}: {status} - {bar_status_int * 10}%")
+    print(f"{table_name}: {status} >> {bar_status_int * 10}%")
