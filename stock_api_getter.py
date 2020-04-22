@@ -58,10 +58,10 @@ def get_limited_stock_data(company_str, cur, conn):
             cur.execute("INSERT INTO Stocks (date_id, stock_price) VALUES (?,?)", (date_id, stock_price))
             new_data_point_count += 1
         else:
-            ## Print a completion message and exit the loop.
-            print("Stock data collected.")
+            ## Exit the loop.
             break
-
+    
+    print("Stock data collected.")
     conn.commit()
 
 

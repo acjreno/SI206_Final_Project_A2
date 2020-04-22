@@ -109,7 +109,7 @@ def print_data_status(table_name, cur, conn):
     Requires: table_name - MUST be one of Tweets, Stocks.
               cur, conn - Connections to Elon_Value.db
     Effects: Prints a status bar to the main console.
-             Returns None.
+             Returns False until the data sets are true, then returns True.
     """
     cur.execute(f"SELECT date_id FROM {table_name}")
     date_id_list = [tup[0] for tup in cur.fetchall()]
@@ -121,5 +121,10 @@ def print_data_status(table_name, cur, conn):
         date_id_list = [date_id for date_id in date_id_list if date_id != -1]
         bar_status_int = (100 - (min(date_id_list + [99]))) // 10
 
-    status = '+' * bar_status_int + '-' * (10 - bar_status_int)
-    print(f"{table_name}: {status} >> {bar_status_int * 10}%")
+    if bar_status_int < 10:
+        status = '+' * bar_status_int + '-' * (10 - bar_status_int)
+        print(f"{table_name}: {status} >> {bar_status_int * 10}%")
+        return False
+    elif bar_status_int == 10:
+        print(f"{table_name}: Dataset Complete.")
+        return True

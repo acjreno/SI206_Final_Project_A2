@@ -70,6 +70,7 @@ def get_limited_tweet_data(cur,conn):
                     new_data_point_count += 1
                     cur.execute("INSERT INTO Tweets (tweet_id, tweet_num , date_id) VALUES (?,?,?)",(tweet_id,tweet_num,date_id))
     
+    print("Tweet data collected.")
     conn.commit()
 
 

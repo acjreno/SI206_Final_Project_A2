@@ -39,28 +39,27 @@ def __main__():
 
 
     print("\nCurrent table statuses:")
-    print_data_status("Stocks", cur, conn)
-    print_data_status("Tweets", cur, conn)
-    ## STATUS BARS!!!!
+    s_full = print_data_status("Stocks", cur, conn)
+    t_full = print_data_status("Tweets", cur, conn)
+    print(" ")
 
     ## Collect Data based on user input.
-    collect_s_data = input("Collect more Stock Data? (y/n): ")
-    if collect_s_data.lower() == 'y':
-        ## collect more data
-        get_limited_stock_data("TSLA", cur, conn)
+    if not s_full:
+        collect_s_data = input("Collect more Stock Data? (y/n): ")
+        if collect_s_data.lower() == 'y':
+            get_limited_stock_data("TSLA", cur, conn)
     
-    collect_t_data = input("Collect more Twitter Data? (y/n): ")
-    if collect_t_data.lower() == 'y':
-        get_limited_tweet_data(cur,conn)
-        print("COLLECTEDDDD!!!")
-        ## print status
+    if not t_full:
+        collect_t_data = input("Collect more Twitter Data? (y/n): ")
+        if collect_t_data.lower() == 'y':
+            get_limited_tweet_data(cur,conn)
         
-    calculate_data = input("Calculate and graph visualizations? (y/n): ")
-    if calculate_data == 'y':
-        calc_tweet_value(cur, conn)
-    
-    ## Draw Graphs?
-    tweet_value_graph(cur,conn)
+    ## Calculate and display charts based on user input.
+    if s_full and t_full:
+        calculate_data = input("\nCalculate and graph visualizations? (y/n): ")
+        if calculate_data == 'y':
+            calc_tweet_value(cur, conn)
+            tweet_value_graph(cur, conn)
 
 
 if __name__ == '__main__':
