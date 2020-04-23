@@ -9,19 +9,22 @@ import plotly.express as px
 from calculations import calc_tweet_value
 
 def tweet_value_graph(cur,conn):
+    """
+    Use Plotly to graph the date on the x-axis and 
+    the average value of Elon's tweets on that day on the y-axis.
+    """
+    ## Calculate the data.
     returned_list = calc_tweet_value(cur,conn)
-    dates = []
-    value_of_tweet = []
-    for date_id,num_tweets,stock_change in returned_list:
-        if num_tweets != 0:
-            dates.append(date_id)
-            value_of_tweet.append(stock_change/num_tweets)
     
+    ## Compile a list of dates and a list 
+    ## of values where the avg_tweet_value != "None".
     date_string_list = []
-    for date in dates:
-        cur.execute("SELECT date FROM Dates WHERE date_id=?", (date,))
-        date_string_list.append(cur.fetchone()[0])
-
-
+    value_of_tweet = []
+    for date_str, avg_tweet_value in returned_list:
+        if avg_tweet_value != "None":
+            date_string_list.append(date_str)
+            value_of_tweet.append(avg_tweet_value)
+    
+    ## Plot the data.
     fig = px.scatter(x=date_string_list, y=value_of_tweet)
     fig.show()

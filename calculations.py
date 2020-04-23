@@ -16,6 +16,34 @@
     ## Final list: [3.4, -1.2, 'undf'... 1.34] * len() = 99
     ## select stock_price,  join on date_id Stocks, Tweets
 
+def write_csv_file(filename, fieldnames, data):
+    """
+    Writes the calculated data to a .csv file with the passed filename.
+
+    filename - The name for the file, without the .csv extension.
+    fieldnames - A list of strings, each being a fieldname.
+    data - A list of tuples containing the data, 
+           in order of the passed fieldnames.
+    """
+    ## Create the header string based off passed fieldnames.
+    header_str = ""
+    for name in fieldnames[:-1]:
+        header_str = header_str + name + ","
+    header_str = header_str + fieldnames[-1] + '\n'
+
+    ## Write the data to the .csv file.
+    with open(f"{filename}.csv", 'w') as f:
+        f.write(header_str)
+        
+        for item in data:
+            line = ""
+            for value in item[:-1]:
+                line = line + str(value) + ","
+            line += str(item[-1])
+
+            f.write(line +'\n')
+
+
 def calc_tweet_value(cur, conn):
     """
     Calculate the value of a single tweet per day based on the change in Tesla's stock price.
@@ -40,16 +68,30 @@ def calc_tweet_value(cur, conn):
         
         date_id_dict[date_id] = (tweet_count, stock_price)
 
-    ## Generate a list in the format [(tweets, stock_price_date - stock_price_previous)]
-    ## Can be indexed as date_id - 1 (i.e. index 0 is date_id 1)
+    ## Generate a list in the format [(date, avg_tweet_value), ...]
     calculated_data_list = []
     prev_date_data = date_id_dict[0]
     for date_id in range(1, 100):
+        ## Get the date str from the Dates table in our DB.
+        cur.execute("SELECT date FROM Dates WHERE date_id=?", (date_id,))
+        date_str = cur.fetchone()[0]
+
+        ## Calculate the average value of the tweets per day.
         date_data = date_id_dict[date_id]
+        try: 
+            avg_tweet_value = round((date_data[1] - prev_date_data[1]) / date_data[0], 3)
+        except ZeroDivisionError:
+            avg_tweet_value = "None"
 
-        calculated_data_list.append((date_id, date_data[0], round(date_data[1] - prev_date_data[1], 3)))
+        ## Add the info to the list.
+        calculated_data_list.append((date_str, avg_tweet_value))
 
+        ## Increment the day.
         prev_date_data = date_data
 
-
+    ## Write the info to a file.
+    fieldnames = ["date", "avg_tweet_value"]
+    write_csv_file("tweet_value", fieldnames, calculated_data_list)
+    
+    ## Return the data for graphing.
     return calculated_data_list
