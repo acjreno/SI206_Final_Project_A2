@@ -36,12 +36,23 @@ def set_up_main_db():
     ## Commit the changes to the db file.
     conn.commit()
 
+    ## Create the Days table.
+    cur.execute("CREATE TABLE IF NOT EXISTS Days (day_of_the_week_id INTEGER PRIMARY KEY, day_str TEXT)")
+
+    ## Populate the Days table.
+    days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    if (cur.execute("SELECT day_str FROM Days").fetchone() == None):
+        for day in days:
+            cur.execute("INSERT INTO Days (day_of_the_week_id, day_str) VALUES (?, ?)", (days.index(day), day))
+    conn.commit()
+
+
     ## Create the Stocks table if it has been deleted to reset data collection.
     cur.execute("CREATE TABLE IF NOT EXISTS Stocks (date_id INTERGER PRIMARY KEY, stock_price REAL)")
     conn.commit()
     
     ##create the tweets table(Primary key=Tweet_id)
-    cur.execute("CREATE TABLE IF NOT EXISTS Tweets (tweet_id INTEGER PRIMARY KEY, tweet_num INTEGER , date_id INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Tweets (tweet_id INTEGER PRIMARY KEY, tweet_num INTEGER , date_id INTEGER, day_of_the_week_id INTEGER)")
     conn.commit()
 
     return cur, conn
@@ -65,7 +76,7 @@ def clear_tweets_table(cur, conn):
     Prints a confirmation statement when a table is dropped.
     """
     cur.execute("DROP TABLE IF EXISTS Tweets")
-    cur.execute("CREATE TABLE IF NOT EXISTS Tweets (tweet_id INTEGER PRIMARY KEY, tweet_num INTEGER , date_id INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Tweets (tweet_id INTEGER PRIMARY KEY, tweet_num INTEGER , date_id INTEGER, day_of_the_week_id INTEGER)")
     conn.commit()
     
     print("Tweets table reset. Ready for new data collection.")

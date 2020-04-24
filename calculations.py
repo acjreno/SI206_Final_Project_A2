@@ -95,3 +95,36 @@ def calc_tweet_value(cur, conn):
     
     ## Return the data for graphing.
     return calculated_data_list
+
+
+def calc_daily_tweet_value(cur, conn):
+    """
+    Calculate the average value for a single tweet by Elon Musk
+    per day of the week.
+    Requires: cur, conn - Connections to the database file.
+    """
+    cur.execute("""SELECT Dates.date_id, Tweets.tweet_num, 
+                          Stocks.stock_price, Tweets.day_of_the_week_id 
+                   FROM Dates JOIN Stocks ON Dates.date_id = Stocks.date_id 
+                   LEFT JOIN Tweets ON Stocks.date_id = Tweets.date_id""")
+
+    ## In the form [(tweet_num, stock_price, day_of_the_week)]
+    data_tup_list = cur.fetchall()
+
+    ## Generate a dict in the format 
+    ## {date_id: (tweet_count, stock_price, day_of_the_week)}
+    date_id_dict = {}
+    for tup in data_tup_list:
+        date_id = tup[0]
+        
+        has_tweet = tup[1]
+        stock_price = tup[2]
+        day_of_the_week = tup[3]
+
+        tweet_count = date_id_dict.get(date_id, (0, None))[0]
+        if has_tweet:
+            tweet_count += 1
+        
+        date_id_dict[date_id] = (tweet_count, stock_price, day_of_the_week)
+
+    ## New dictionary??

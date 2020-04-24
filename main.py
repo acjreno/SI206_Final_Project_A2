@@ -14,7 +14,7 @@ from utility import (set_up_main_db,
 from stock_api_getter import get_limited_stock_data
 from tweet_api_getter import get_limited_tweet_data
 
-from calculations import calc_tweet_value
+from calculations import calc_tweet_value, calc_daily_tweet_value
 from graphs import tweet_value_graph
 
 def __main__():
@@ -58,8 +58,9 @@ def __main__():
     if s_full and t_full:
         calculate_data = input("\nCalculate and graph visualizations? (y/n): ")
         if calculate_data == 'y':
-            calc_tweet_value(cur, conn)
-            tweet_value_graph(cur, conn)
+            #calc_tweet_value(cur, conn)
+            #tweet_value_graph(cur, conn)
+            calc_daily_tweet_value(cur, conn)
 
 
 if __name__ == '__main__':

@@ -50,7 +50,7 @@ def get_limited_tweet_data(cur,conn):
 
     page_number = (tweet_count//tweets_per_page +1)
 
-    ##get 100 items from tweepy
+    ## Get 100 items from tweepy
     elon_tweet_list = api.user_timeline(screen_name='elonmusk',max_id=start_id,count=100,page=page_number)
     new_data_point_count = 0
     for tweet in elon_tweet_list:
@@ -60,15 +60,28 @@ def get_limited_tweet_data(cur,conn):
                 tweet_id = tweet._json['id']
                 if tweet_id != start_id:
                     tweet_num = tweet_count
-                    date = twitter_api_date_to_standard(tweet._json["created_at"])
+                    raw_date_str = tweet._json["created_at"]
+                    day_of_the_week = raw_date_str[:3]
+                    standard_date = twitter_api_date_to_standard(raw_date_str)
+                    
+                    ## Get the foreign key for the date.
                     try:
-                        cur.execute("SELECT date_id FROM Dates WHERE date=?",(date,))
+                        cur.execute("SELECT date_id FROM Dates WHERE date=?",(standard_date,))
                         date_id = cur.fetchone()[0]
                     except:
                         date_id = -1
+
+                    ## Get the foreign key for day of the week.
+                    try:
+                        cur.execute("SELECT day_of_the_week_id FROM Days WHERE day_str=?",(day_of_the_week,))
+                        day_of_the_week_id = cur.fetchone()[0]
+                    except:
+                        day_of_the_week_id = -1
+
                 
                     new_data_point_count += 1
-                    cur.execute("INSERT INTO Tweets (tweet_id, tweet_num , date_id) VALUES (?,?,?)",(tweet_id,tweet_num,date_id))
+                    cur.execute("INSERT INTO Tweets (tweet_id, tweet_num , date_id, day_of_the_week_id) VALUES (?,?,?,?)", 
+                                (tweet_id, tweet_num, date_id, day_of_the_week_id))
     
     print("Tweet data collected.")
     conn.commit()
