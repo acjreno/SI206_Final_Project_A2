@@ -12,7 +12,8 @@ import os
 
 def set_up_main_db():
     """
-    Creates the elon_value.db file and populates the date_id table.
+    Creates the elon_value.db file, creates and populates the Dates and Days tables,
+    and initializes the Stocks and Tweets tables. 
     """
     ## Connect to the database.
     path = os.path.dirname(os.path.abspath(__file__))

@@ -14,8 +14,8 @@ from utility import (set_up_main_db,
 from stock_api_getter import get_limited_stock_data
 from tweet_api_getter import get_limited_tweet_data
 
-from calculations import calc_tweet_value, calc_daily_tweet_value
-from graphs import tweet_value_graph
+from graphs import tweet_value_graph, daily_tweet_value_graph
+
 
 def __main__():
     print("----------------------------------------")
@@ -25,7 +25,6 @@ def __main__():
     
     ## Create Elon_Value.db
     cur, conn = set_up_main_db()
-
 
     ## Restart the data to begin recollection?
     reset = input("Reset any tables? (y/n): ")
@@ -37,7 +36,7 @@ def __main__():
         if clear_t_data.lower() == 'y':
             clear_tweets_table(cur, conn)
 
-
+    ## Inform the user of table statuses.
     print("\nCurrent table statuses:")
     s_full = print_data_status("Stocks", cur, conn)
     t_full = print_data_status("Tweets", cur, conn)
@@ -48,7 +47,6 @@ def __main__():
         collect_s_data = input("Collect more Stock Data? (y/n): ")
         if collect_s_data.lower() == 'y':
             get_limited_stock_data("TSLA", cur, conn)
-    
     if not t_full:
         collect_t_data = input("Collect more Twitter Data? (y/n): ")
         if collect_t_data.lower() == 'y':
@@ -58,8 +56,9 @@ def __main__():
     if s_full and t_full:
         calculate_data = input("\nCalculate and graph visualizations? (y/n): ")
         if calculate_data == 'y':
-            #tweet_value_graph(cur, conn)
-            calc_daily_tweet_value(cur, conn)
+            tweet_value_graph(cur, conn)
+            daily_tweet_value_graph(cur, conn)
+            
 
 
 if __name__ == '__main__':

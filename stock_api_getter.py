@@ -42,10 +42,10 @@ def get_limited_stock_data(company_str, cur, conn):
             if stock_api_date_to_standard(day['date']) == fetched_dates[-1][0]:
                 start_index = stock_price_list.index(day) + 1
 
-    ## Add a maximum of 20 new data values to the Stocks database.
     ## Loop through a slice of the API response, starting at the index found above.
     new_data_point_count = 0
     for item in stock_price_list[start_index:]:
+        ## Add a maximum of 20 new data values.
         if new_data_point_count < 20:
             ## Get the date_id from the Dates table based on a standardized date.
             cur.execute("SELECT date_id FROM Dates WHERE date=?", (stock_api_date_to_standard(item['date']),))
@@ -58,9 +58,10 @@ def get_limited_stock_data(company_str, cur, conn):
             cur.execute("INSERT INTO Stocks (date_id, stock_price) VALUES (?,?)", (date_id, stock_price))
             new_data_point_count += 1
         else:
-            ## Exit the loop.
+            ## Exit the loop if 20 new data points have been added.
             break
-    
+
+    ## Print confirmation and commit the changes to the database.
     print("Stock data collected.")
     conn.commit()
 
