@@ -8,26 +8,22 @@
 
 import requests
 import json
-
-## Include utility functions to convert time and dates.
 from utility import stock_api_date_to_standard
 
 
-def get_limited_stock_data(company_str, cur, conn):
+def get_limited_stock_data(cur, conn):
     """
     Function to gather data from the stock API, and then store a 
     maximum of 20 data points in the Stocks table of the DB. 
 
-    Requires: company_str - A string representing the stock abbreviation of a company.
+    Requires: Connections to the database.
     Modifies: Upon initial run, stores the first 20 of 100 days worth of stock data 
-              in the database. Creates a file to record the most recent date stored,
-              and stores the next 20 dates on running the function again by reading 
-              the supplemental file.
+              in the database. Stores the next 20 dates on running the function again.
     Effects:  Prints a completion message when the data has been collected.
               Returns nothing.
     """
     ## Make the request to the stock API.
-    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/{company_str}?from=2019-11-19&to=2020-04-14")
+    r = requests.get(f"https://financialmodelingprep.com/api/v3/historical-price-full/TSLA?from=2019-11-19&to=2020-04-14")
     stock_price_list = json.loads(r.text)['historical']
     
     ## Calculate the index to resume data collection from using the dates in the database.
@@ -64,5 +60,3 @@ def get_limited_stock_data(company_str, cur, conn):
     ## Print confirmation and commit the changes to the database.
     print("Stock data collected.")
     conn.commit()
-
-

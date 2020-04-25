@@ -6,16 +6,6 @@
 ## collected data from other parts of the project.
 
 
-## Calculate tweets per day
-
-## Calculate stock change in price from one day to the next
-    ## i.e. Day 1 has a value of day 1 - day 0
-    ## Won't include the first day in the graphs
-
-## Except the first day, stock_price_change[day] / tweets_per_day[day]
-    ## Final list: [3.4, -1.2, 'undf'... 1.34] * len() = 99
-    ## select stock_price,  join on date_id Stocks, Tweets
-
 def write_csv_file(filename, fieldnames, data):
     """
     Writes the calculated data to a .csv file with the passed filename.

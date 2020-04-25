@@ -10,6 +10,7 @@ import requests
 import json
 import os
 
+
 def set_up_main_db():
     """
     Creates the elon_value.db file, creates and populates the Dates and Days tables,

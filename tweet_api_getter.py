@@ -1,5 +1,14 @@
+## Alex Jones, Ashley Thompson
+## SI 206 - Data Oriented Programming
+## University of Michigan
+##
+## This file is used to gather data from the Tweepy API 
+## regarding Tweets made by Elon Musk, adding a max of 20 
+## new data points to the DB each time the functions are used.
+
 import tweepy 
 from utility import twitter_api_date_to_standard
+
 
 def auth(): 
     """
@@ -48,7 +57,7 @@ def get_limited_tweet_data(cur,conn):
                 start_id = tweet
 
             if num > start_id:
-                tweet_count = num          
+                tweet_count = num
     
 
     ## Calculate the current page number for smooth Tweepy navigation.
@@ -92,10 +101,3 @@ def get_limited_tweet_data(cur,conn):
     ## Print confirmation and commit the changes to the database.
     print("Tweet data collected.")
     conn.commit()
-
-
-            
-
-
-
-

@@ -2,7 +2,7 @@
 ## SI 206 - Data Oriented Programming
 ## University of Michigan
 ##
-## The main function for our data collection project.
+## The main driver function for our data collection project.
 
 from utility import (set_up_main_db, 
                      twitter_api_date_to_standard, 
@@ -10,10 +10,8 @@ from utility import (set_up_main_db,
                      clear_stocks_table,
                      clear_tweets_table,
                      print_data_status)
-
 from stock_api_getter import get_limited_stock_data
 from tweet_api_getter import get_limited_tweet_data
-
 from graphs import tweet_value_graph, daily_tweet_value_graph
 
 
@@ -46,7 +44,7 @@ def __main__():
     if not s_full:
         collect_s_data = input("Collect more Stock Data? (y/n): ")
         if collect_s_data.lower() == 'y':
-            get_limited_stock_data("TSLA", cur, conn)
+            get_limited_stock_data(cur, conn)
     if not t_full:
         collect_t_data = input("Collect more Twitter Data? (y/n): ")
         if collect_t_data.lower() == 'y':
@@ -56,10 +54,13 @@ def __main__():
     if s_full and t_full:
         calculate_data = input("\nCalculate and graph visualizations? (y/n): ")
         if calculate_data == 'y':
-            tweet_value_graph(cur, conn)
-            daily_tweet_value_graph(cur, conn)
+            tv = input("Display the Tweet Value per Date Graph? (y/n): ")
+            if tv == 'y':
+                tweet_value_graph(cur, conn)
+            dtv = input("Display the Average Tweet Value per Day of the Week Graph? (y/n): ")
+            if dtv == 'y':
+                daily_tweet_value_graph(cur, conn)
             
-
 
 if __name__ == '__main__':
     __main__()
