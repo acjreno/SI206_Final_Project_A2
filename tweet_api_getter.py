@@ -14,47 +14,53 @@ def auth():
 
 
 def get_limited_tweet_data(cur,conn):
+    """
+    Gathers a limited (20 or less) amount of Elon Musk's tweets and stores them to
+    our database each time this function is called. Works backwards chronologically,
+    i.e. the first tweet stored will be the most recent tweet from the date range.
 
-    ##Authorize the Tweepy api with my api keys
+    Requires connections to the database.
+
+    Prints a message indicating that new data was added successfully.
+    """
+    ## Authorize the Tweepy api with my api keys
     api = auth()
 
-    ## The last Elon Musk tweet from April 15th(one before the counted id)
-    intial_id = 1250212864951857154 
+    ## The last Elon Musk tweet from April 15th (The Tweet just after the date limit).
+    INITIAL_ID = 1250212864951857154 
+    ## The constant number of tweets per 'page' returned by the Tweepy API.
+    TWEETS_PER_PAGE = 200
 
-    ##Check for most recent tweet id
-    cur.execute("SELECT tweet_id FROM Tweets")
-    tweet_id_list = cur.fetchall()
-    if tweet_id_list == []:
-        ##if none exists, set start to inital
-        start_id = intial_id
-    else:
-        ##get most recent id
-        start_id = tweet_id_list[0][0]
-        for tweet in tweet_id_list:
-            if tweet[0] < start_id:
-                start_id = tweet[0]
-
-
-    tweets_per_page = 200
-    cur.execute("SELECT tweet_num FROM Tweets")
-    tweet_num_list = cur.fetchall()
-    if tweet_num_list == []:
-        ##if none exists, set start to 1 for first tweet
+    ## Check for the oldest tweet_id stored in the database.
+    cur.execute("SELECT tweet_id, tweet_num FROM Tweets")
+    tweet_data_list = cur.fetchall()
+    if tweet_data_list == []:
+        ## If none exists, set start to inital and tweet count to 0.
+        start_id = INITIAL_ID
         tweet_count = 0
     else:
-        ##if tweets exist, fetch last tweet 
-        tweet_count = tweet_num_list[0][0]
-        for num in tweet_num_list:
-            if num[0] > start_id:
-                tweet_count = num[0]
+        ## Otherwise, set start to the oldest tweet_id and
+        ## set the count to the updated count.
+        start_id = tweet_data_list[0][0]
+        tweet_count = tweet_data_list[0][1]
+        for tweet, num in tweet_data_list:
+            if tweet < start_id:
+                start_id = tweet
 
-    page_number = (tweet_count//tweets_per_page +1)
+            if num > start_id:
+                tweet_count = num          
+    
 
-    ## Get 100 items from tweepy
+    ## Calculate the current page number for smooth Tweepy navigation.
+    page_number = (tweet_count//TWEETS_PER_PAGE +1)
+
+    ## Query the Tweepy API in order to collect new data.
     elon_tweet_list = api.user_timeline(screen_name='elonmusk',max_id=start_id,count=100,page=page_number)
     new_data_point_count = 0
     for tweet in elon_tweet_list:
+        ## Ensure a max of 20 new data points are stored in the database.
         if new_data_point_count < 20:
+            ## Filter out replies.
             if tweet._json['in_reply_to_status_id'] == None:
                 tweet_count += 1
                 tweet_id = tweet._json['id']
@@ -78,11 +84,12 @@ def get_limited_tweet_data(cur,conn):
                     except:
                         day_of_the_week_id = -1
 
-                
+                    ## Insert the new data into the database and increment the count of new data.
                     new_data_point_count += 1
                     cur.execute("INSERT INTO Tweets (tweet_id, tweet_num , date_id, day_of_the_week_id) VALUES (?,?,?,?)", 
                                 (tweet_id, tweet_num, date_id, day_of_the_week_id))
     
+    ## Print confirmation and commit the changes to the database.
     print("Tweet data collected.")
     conn.commit()
 
