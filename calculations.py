@@ -127,4 +127,49 @@ def calc_daily_tweet_value(cur, conn):
         
         date_id_dict[date_id] = (tweet_count, stock_price, day_of_the_week)
 
-    ## New dictionary??
+    ## Generate a list in the form [(day_of_the_week, avg_tweet_value), ...]
+    ## Contains each day individually, missing their date_id.
+    single_day_list = []
+    prev_date_data = date_id_dict[0]
+    for date_id in range(1, 100):
+        ## Calculate the average value of the tweets per day.
+        date_data = date_id_dict[date_id]
+        try: 
+            avg_tweet_value = round((date_data[1] - prev_date_data[1]) / date_data[0], 3)
+        except ZeroDivisionError:
+            avg_tweet_value = "None"
+
+        if date_data[2] != None:
+            ## Collect the day_str from the Days table
+            cur.execute("SELECT day_str FROM Days WHERE day_of_the_week_id=?", (date_data[2],))
+            day_str = cur.fetchone()[0]
+
+            ## Add the info to the list.
+            single_day_list.append((day_str, avg_tweet_value))
+
+        ## Increment the day.
+        prev_date_data = date_data
+
+    ## Generate the dict in the form {day_str: [all averages for that day], ...}
+    day_count_dict = {}
+    for day, individual_average in single_day_list:
+        if day not in day_count_dict:
+            day_count_dict[day] = []
+        
+        day_count_dict[day].append(individual_average)
+
+    ## Generate a list in the form [(day_of_the_week, overall_average), ...]
+    calculated_data_list = []
+    for day, data in day_count_dict.items():
+        calculated_data_list.append((day, round((sum(data) / len(data)), 3)))
+
+    ## Sort by day of the week.
+    day_order = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    calculated_data_list = sorted(calculated_data_list, key=lambda tup: day_order.index(tup[0]))
+
+    ## Write the info to a file.
+    fieldnames = ["day", "overall_avg_tweet_value"]
+    write_csv_file("daily_tweet_value", fieldnames, calculated_data_list)
+    
+    ## Return the data for graphing.
+    return calculated_data_list

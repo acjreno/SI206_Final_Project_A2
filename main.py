@@ -58,7 +58,6 @@ def __main__():
     if s_full and t_full:
         calculate_data = input("\nCalculate and graph visualizations? (y/n): ")
         if calculate_data == 'y':
-            #calc_tweet_value(cur, conn)
             #tweet_value_graph(cur, conn)
             calc_daily_tweet_value(cur, conn)
 
